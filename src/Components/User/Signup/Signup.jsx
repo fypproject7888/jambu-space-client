@@ -57,11 +57,10 @@ const SignUpPage = () => {
       payload.append("country", formData.country);
       payload.append("phone", formData.phone);
       payload.append("company", formData.company);
-      payload.append("type", formData.type);
       payload.append("image", formData.image);
 
       axios
-        .post(API_URL + "auth", payload, {
+        .post(API_URL + `auth/user/${formData.type}`, payload, {
           headers: { "Content-Type": "multipart/form-data" },
         })
         .then(res => {

@@ -33,7 +33,7 @@ const LoginPage = () => {
           localStorage.setItem("userType", formData.type);
           navigate("/pages/dashboard");
         })
-        .catch(() => toast.error("Invalid Credentials"));
+        .catch(err => toast.error(err.response.data?.message));
     }
   };
 

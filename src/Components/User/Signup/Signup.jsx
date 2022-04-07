@@ -21,6 +21,16 @@ import { API_URL } from "../../utils/contants";
 
 const { Option } = Select;
 
+const requiredFields = [
+  "fullName",
+  "username",
+  "email",
+  "password",
+  "country",
+  "phone",
+  "type",
+];
+
 const SignUpPage = () => {
   const [formData, setFormData] = useState({
     fullName: "",
@@ -43,7 +53,9 @@ const SignUpPage = () => {
 
   const handleSubmit = () => {
     // Check Validation
-    const emptyFields = Object.keys(formData).filter(key => !formData[key]);
+    const emptyFields = Object.keys(formData).filter(
+      key => requiredFields.includes(key) && !formData[key]
+    );
     const anyInvalidField = emptyFields.length > 0 ? true : false;
     if (anyInvalidField) toast.error(`${emptyFields[0]} is required`);
 
@@ -56,8 +68,8 @@ const SignUpPage = () => {
       payload.append("password", formData.password);
       payload.append("country", formData.country);
       payload.append("phone", formData.phone);
-      payload.append("company", formData.company);
-      payload.append("image", formData.image);
+      if (formData.company) payload.append("company", formData.company);
+      if (formData.image) payload.append("image", formData.image);
 
       axios
         .post(API_URL + `auth/user/${formData.type}`, payload, {
@@ -77,7 +89,9 @@ const SignUpPage = () => {
             type: "customer",
           });
         })
-        .catch(() => toast.error("Something went wrong"));
+        .catch(err => {
+          toast.error(err.response.data.message);
+        });
     }
   };
 

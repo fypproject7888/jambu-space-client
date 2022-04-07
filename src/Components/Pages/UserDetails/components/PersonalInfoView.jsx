@@ -7,9 +7,9 @@ import { API_URL, BASE_URL } from "../../../utils/contants";
 
 const PersonalInfoView = ({ selectedUser }) => {
   const navigate = useNavigate();
+  const loggedInUser = JSON.parse(localStorage.getItem("authUser"));
 
   const handleMessageButtonClick = () => {
-    const loggedInUser = JSON.parse(localStorage.getItem("authUser"));
     const payload = {
       senderID: loggedInUser._id,
       receiverID: selectedUser._id,
@@ -46,13 +46,15 @@ const PersonalInfoView = ({ selectedUser }) => {
         )}
       </Col>
 
-      <Button
-        variant="contained"
-        className="w-auto send-message-btn"
-        onClick={handleMessageButtonClick}
-      >
-        Send Message
-      </Button>
+      {loggedInUser && (
+        <Button
+          variant="contained"
+          className="w-auto send-message-btn"
+          onClick={handleMessageButtonClick}
+        >
+          Send Message
+        </Button>
+      )}
     </Row>
   );
 };

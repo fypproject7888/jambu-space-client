@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState, useRef } from "react";
 import { Container, Row, Col } from "react-bootstrap";
+import { Button } from "antd";
 import { IoMdSend } from "react-icons/io";
 import { toast } from "react-toastify";
 import axios from "axios";
@@ -13,6 +14,8 @@ import "../../Stylesheet/Chat/chat.scss";
 
 const ChatPage = () => {
   const socket = useRef();
+  const inputRef = useRef(null);
+  const sendBtnRef = useRef(null);
   const user = JSON.parse(localStorage.getItem("authUser"));
   const [selected, setSelected] = useState(null);
   const [newMessage, setNewMessage] = useState("");
@@ -36,6 +39,17 @@ const ChatPage = () => {
       }));
     });
   }, []);
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.addEventListener("keyup", function (event) {
+        if (event.keyCode === 13) {
+          event.preventDefault();
+          sendBtnRef.current.click();
+        }
+      });
+    }
+  }, [inputRef.current]);
 
   const handleNewMessageSend = () => {
     const receiverID = selected?.members.find(item => item !== user?._id);
@@ -90,6 +104,7 @@ const ChatPage = () => {
                   <Col className="px-0" xs={10} sm={10} md={11}>
                     <input
                       className="form-control message-input-feild"
+                      ref={inputRef}
                       placeholder="Type a message"
                       value={newMessage}
                       onChange={e => {
@@ -99,12 +114,18 @@ const ChatPage = () => {
                   </Col>
 
                   <Col className="px-0 text-center" xs={2} sm={2} md={1}>
-                    <IoMdSend
-                      className="me-0 me-sm-0 me-md-2 me-lg-2 msg-send-btn"
-                      color="#8696A0"
-                      fontSize={22}
+                    <Button
+                      ref={sendBtnRef}
+                      type="link"
+                      size="small"
                       onClick={handleNewMessageSend}
-                    />
+                    >
+                      <IoMdSend
+                        className="me-0 me-sm-0 me-md-2 me-lg-2 msg-send-btn"
+                        color="#8696A0"
+                        fontSize={22}
+                      />
+                    </Button>
                   </Col>
                 </Row>
               </Row>

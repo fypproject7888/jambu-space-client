@@ -27,6 +27,12 @@
   margin-top: 5vh;
 }
 
+.cursor-pointer {
+  &:hover {
+    cursor: pointer;
+  }
+}
+
 @font-face {
   font-family: "Neue-Regular";
   src: url(Components/assets/NeueMontrealRegular.otf);

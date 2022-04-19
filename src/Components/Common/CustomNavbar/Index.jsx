@@ -71,7 +71,7 @@ const CustomNavbar = () => {
 
   return (
     <>
-      {showNavbar && (
+      {showNavbar ? (
         <Container
           fluid
           style={{
@@ -130,95 +130,98 @@ const CustomNavbar = () => {
             </Col>
           </Row>
         </Container>
-      )}
+      ) : (
+        <Container fluid className="border-bottom bg-white container-navbar">
+          <Container>
+            <Row className="py-3">
+              <Col
+                xs={12}
+                sm={4}
+                md={3}
+                lg={3}
+                className="d-flex align-items-center justify-content-start"
+              >
+                <div className="d-block d-sm-block d-md-block d-lg-none hamburger me-4">
+                  <AiOutlineMenu onClick={handleClick} />
+                </div>
+                <img className="logo-img" src={logo} alt="" />
+              </Col>
 
-      <Container fluid className="border-bottom bg-white container-navbar">
-        <Container>
-          <Row className="py-3">
-            <Col
-              xs={12}
-              sm={4}
-              md={3}
-              lg={3}
-              className="d-flex align-items-center justify-content-start"
-            >
-              <div className="d-block d-sm-block d-md-block d-lg-none hamburger me-4">
-                <AiOutlineMenu onClick={handleClick} />
-              </div>
-              <img className="logo-img" src={logo} alt="" />
-            </Col>
-
-            <Col
-              xs={12}
-              sm={8}
-              md={9}
-              lg={9}
-              className="d-flex align-items-center justify-content-end justify-content-lg-between"
-            >
-              <div className="d-none d-lg-flex cont-nav-items align-items-center justify-content-lg-between">
-                {filteredMenu.map(item => (
-                  <Link
-                    key={item.key}
-                    className="mb-0 mx-4 font-primary navbar-items"
-                    to={item.path}
-                  >
-                    <h6 className="mb-0 font-primary navbar-items">
-                      {item.label}
-                    </h6>
-                  </Link>
-                ))}
-              </div>
-              {isLoggedIn ? (
-                <div className="d-none d-md-flex justify-content-between">
-                  <img
-                    className="sidebarUserImg me-2"
-                    src={BASE_URL + user?.image?.url}
-                    alt="User"
-                  />
-                  <div className="d-flex align-items-start justify-content-center flex-column">
-                    <p className="m-0">{user?.fullName}</p>
-                    <div className="d-flex justify-content-between align-items-center">
-                      <p className="m-0 me-2">{user?.email}</p>
-                      <Dropdown
-                        overlay={
-                          <Menu
-                            onClick={() => {
-                              localStorage.removeItem("authUser");
-                              navigate("/login");
-                            }}
-                          >
-                            <Menu.Item key="1">Logout</Menu.Item>
-                          </Menu>
-                        }
-                      >
-                        <AiFillCaretDown />
-                      </Dropdown>
+              <Col
+                xs={12}
+                sm={8}
+                md={9}
+                lg={9}
+                className="d-flex align-items-center justify-content-end justify-content-lg-between"
+              >
+                <div className="d-none d-lg-flex cont-nav-items align-items-center justify-content-lg-between">
+                  {filteredMenu.map(item => (
+                    <Link
+                      key={item.key}
+                      className="mb-0 mx-4 font-primary navbar-items"
+                      to={item.path}
+                    >
+                      <h6 className="mb-0 font-primary navbar-items">
+                        {item.label}
+                      </h6>
+                    </Link>
+                  ))}
+                </div>
+                {isLoggedIn ? (
+                  <div className="d-none d-md-flex justify-content-between">
+                    <img
+                      className="sidebarUserImg me-2"
+                      src={BASE_URL + user?.image?.url}
+                      alt="User"
+                    />
+                    <div className="d-flex align-items-start justify-content-center flex-column">
+                      <p className="m-0">{user?.fullName}</p>
+                      <div className="d-flex justify-content-between align-items-center">
+                        <p className="m-0 me-2">{user?.email}</p>
+                        <Dropdown
+                          overlay={
+                            <Menu
+                              onClick={() => {
+                                localStorage.removeItem("authUser");
+                                navigate("/login");
+                              }}
+                            >
+                              <Menu.Item key="1">Logout</Menu.Item>
+                            </Menu>
+                          }
+                        >
+                          <AiFillCaretDown />
+                        </Dropdown>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ) : (
-                <div className="d-flex" style={{ maxWidth: "300px" }}>
-                  <CustomButton
-                    block
-                    classes="mx-2"
-                    type="secondary"
-                    values="Login"
-                    variant="outlined"
-                    onClick={() => navigate("/login")}
-                  />
-                  <CustomButton
-                    block
-                    classes="mx-2"
-                    type="primary"
-                    values="Signup"
-                    onClick={() => navigate("/signup")}
-                  />
-                </div>
-              )}
-            </Col>
-          </Row>
+                ) : (
+                  <div
+                    className="d-flex auth-buttons"
+                    style={{ maxWidth: "300px" }}
+                  >
+                    <CustomButton
+                      block
+                      classes="mx-2"
+                      type="secondary"
+                      values="Login"
+                      variant="outlined"
+                      onClick={() => navigate("/login")}
+                    />
+                    <CustomButton
+                      block
+                      classes="mx-2"
+                      type="primary"
+                      values="Signup"
+                      onClick={() => navigate("/signup")}
+                    />
+                  </div>
+                )}
+              </Col>
+            </Row>
+          </Container>
         </Container>
-      </Container>
+      )}
     </>
   );
 };

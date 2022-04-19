@@ -1,17 +1,38 @@
 import React, { useState } from "react";
+import Fab from "@mui/material/Fab";
+import Stack from "@mui/material/Stack";
+import { AiFillFileAdd, AiFillEye } from "react-icons/ai";
+import { Alert, Input, Form, Tooltip } from "antd";
+import Chip from "@mui/material/Chip";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { Row, Col, Modal, Form, Button } from "react-bootstrap";
+import { Row, Col, Modal, Button } from "react-bootstrap";
 import { capitalize } from "lodash/string";
 import { API_URL, BASE_URL } from "../../../utils/contants";
 
+const fabStyle = {
+  position: "fixed",
+  bottom: 16,
+  right: 16,
+};
+
 function UserProfile() {
   const user = JSON.parse(localStorage.getItem("authUser"));
+  const userType = localStorage.getItem("userType");
   const [loggedInUser, setLoggedInUser] = useState(user);
+  const [userSkills, setUserSkills] = useState(user?.skills || []);
+  const [userResume, setUserResume] = useState(user?.resume || "");
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isSkillModalOpen, setIsSkillModalOpen] = useState(false);
+  const [isResumeModalOpen, setIsResumeModalOpen] = useState(false);
   const [selectedAttr, setSelectedAttr] = useState(null);
 
+  const isSeller = userType === "seller";
+  let isResumeUploaded = !!userResume;
+
   const toggleEditModal = () => setIsEditModalOpen(!isEditModalOpen);
+  const toggleSkillModal = () => setIsSkillModalOpen(!isSkillModalOpen);
+  const toggleResumeModal = () => setIsResumeModalOpen(!isResumeModalOpen);
 
   const handleUpdateAttr = event => {
     event.preventDefault();
@@ -57,6 +78,46 @@ function UserProfile() {
     }
   };
 
+  const handleAddSkill = values => {
+    toggleSkillModal();
+    axios
+      .post(API_URL + "auth/seller/skills/add", {
+        sellerID: loggedInUser._id,
+        ...values,
+      })
+      .then(() => {
+        setUserSkills([...userSkills, values.skill]);
+        localStorage.setItem(
+          "authUser",
+          JSON.stringify({
+            ...user,
+            skills: [...userSkills, values.skill],
+          })
+        );
+      })
+      .catch(() => toast.error("Error adding skill. Try Again !!"));
+  };
+
+  const handleAddResume = values => {
+    toggleResumeModal();
+    axios
+      .post(API_URL + "auth/seller/resume/add", {
+        sellerID: loggedInUser._id,
+        ...values,
+      })
+      .then(() => {
+        localStorage.setItem(
+          "authUser",
+          JSON.stringify({
+            ...user,
+            resume: values.resume,
+          })
+        );
+        setUserResume(values.resume);
+      })
+      .catch(() => toast.error("Error updating resume. Try Again !!"));
+  };
+
   return (
     <>
       {/* Modal for Editing Attributes */}
@@ -96,6 +157,110 @@ function UserProfile() {
           </Form>
         </Modal.Body>
       </Modal>
+
+      <Modal show={isSkillModalOpen} onHide={toggleSkillModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Add Skill</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form onFinish={handleAddSkill}>
+            <Form.Item
+              label="Skill"
+              name="skill"
+              rules={[
+                {
+                  required: true,
+                  message: "Please input your skill!",
+                },
+              ]}
+            >
+              <Input />
+            </Form.Item>
+            <div className="py-3">
+              <Button variant="success" type="submit">
+                Add
+              </Button>
+              <Button
+                style={{ marginLeft: "10px" }}
+                variant="secondary"
+                onClick={toggleSkillModal}
+              >
+                Close
+              </Button>
+            </div>
+          </Form>
+        </Modal.Body>
+      </Modal>
+
+      <Modal show={isResumeModalOpen} onHide={toggleResumeModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Upload Resume</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form onFinish={handleAddResume}>
+            <Form.Item
+              label="Resume Link"
+              name="resume"
+              rules={[
+                {
+                  required: true,
+                  message: "Please input your resume link!",
+                },
+              ]}
+            >
+              <Input />
+            </Form.Item>
+            <div className="py-3">
+              <Button variant="success" type="submit">
+                Add Resume
+              </Button>
+              <Button
+                style={{ marginLeft: "10px" }}
+                variant="secondary"
+                onClick={toggleResumeModal}
+              >
+                Close
+              </Button>
+            </div>
+          </Form>
+        </Modal.Body>
+      </Modal>
+
+      {isResumeUploaded ? (
+        <a href={userResume} target="_blank" rel="noreferrer">
+          <Tooltip placement="left" color="#2db7f5" title="View Resume">
+            <Fab color="primary" sx={fabStyle}>
+              <AiFillEye size={24} />
+            </Fab>
+          </Tooltip>
+        </a>
+      ) : (
+        <Tooltip placement="left" color="#2db7f5" title="Upload Resume">
+          <Fab color="primary" sx={fabStyle} onClick={toggleResumeModal}>
+            <AiFillFileAdd size={24} />
+          </Fab>
+        </Tooltip>
+      )}
+
+      {!isResumeUploaded && (
+        <Alert
+          message="You have not added your resume yet. It will help your clients to know better about you"
+          className="my-3"
+          type="info"
+          showIcon
+          closable
+        />
+      )}
+
+      {isSeller && userSkills.length === 0 && (
+        <Alert
+          message="Don't forget to add your skills"
+          className="my-3"
+          type="info"
+          showIcon
+          closable
+        />
+      )}
 
       <Row className="user-profile">
         {/* User Profile Image */}
@@ -162,6 +327,18 @@ function UserProfile() {
                 }}
               >
                 Edit
+              </p>
+            </div>
+          )}
+          {isSeller && (
+            <div className="w-100 d-flex justify-content-between">
+              <Stack spacing={1} direction="row">
+                {userSkills.map(item => (
+                  <Chip label={item} size="small" color="primary" />
+                ))}
+              </Stack>
+              <p className="edit-btn" onClick={toggleSkillModal}>
+                Add Skill
               </p>
             </div>
           )}

@@ -16,7 +16,7 @@ const JobCard = ({ job }) => {
     <Col key={job._id} xs={6} sm={6} md={4} lg={3} className="my-2">
       <div className="job-card mx-2 border overflow-hidden">
         <div className="card-header-top position-relative">
-          <img className="job-image" src={BASE_URL + job.image.url} alt="" />
+          <img className="job-image" src={BASE_URL + job?.image?.url} alt="" />
 
           {label && (
             <div className="top-tag position-absolute bg-white rounded-pill px-2">
@@ -52,7 +52,7 @@ const JobCard = ({ job }) => {
             <div className="footer-img-wrapper me-2">
               <img
                 className="job-client-image"
-                src={BASE_URL + job?.customer?.image.url}
+                src={BASE_URL + job?.customer?.image?.url}
                 onClick={() =>
                   navigate(`/pages/user-detail/${job.customer._id}`)
                 }
@@ -70,7 +70,7 @@ const JobCard = ({ job }) => {
             className="footer-right d-flex align-items-center justify-content-end"
           >
             <AiFillStar className="color-primary" />
-            <p className="mb-0 mx-1">{job?.customer?.rating}</p>
+            <p className="mb-0 mx-1">{job?.customer?.rating || 5}</p>
           </Col>
         </Row>
       </div>

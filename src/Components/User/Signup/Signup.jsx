@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { Container, Row, Col } from "react-bootstrap";
@@ -32,6 +32,7 @@ const requiredFields = [
 ];
 
 const SignUpPage = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     fullName: "",
     username: "",
@@ -77,17 +78,7 @@ const SignUpPage = () => {
         })
         .then(res => {
           toast.success(res.data.message);
-          setFormData({
-            fullName: "",
-            username: "",
-            email: "",
-            password: "",
-            country: "",
-            phone: "",
-            company: "",
-            image: null,
-            type: "customer",
-          });
+          navigate("/login");
         })
         .catch(err => {
           toast.error(err.response.data.message);
